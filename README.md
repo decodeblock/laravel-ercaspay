@@ -19,6 +19,10 @@ A Laravel package for seamless integration with the Ercaspay payment gateway API
 -   PHP 8.3 or higher
 -   Laravel 9.0 or higher
 
+## Ercaspay API Documentation
+
+- [Click here for the documentation](https://docs.ercaspay.com/#2f601f17-0bde-44ba-971a-f8458cadb213)
+
 ## Installation
 
 Install the package via composer:
