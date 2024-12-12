@@ -1,84 +1,43 @@
-# A Laravel Package for working with Ercaspay API seamlessly
+# Laravel Ercaspay
+
+A Laravel package for seamless integration with the Ercaspay payment gateway API.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://packagist.org/packages/decodeblock/laravel-ercaspay)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3Arun-tests+branch%3Amain)
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://packagist.org/packages/decodeblock/laravel-ercaspay)
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+## Features
 
-## Support us
+- Easy integration with Ercaspay payment gateway
+- Support for multiple payment methods
+- Webhook handling
+- Payment verification
+- Comprehensive error handling
 
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/laravel-ercaspay.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/laravel-ercaspay)
+## Requirements
 
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+- PHP 8.1 or higher
+- Laravel 9.0 or higher
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
 composer require decodeblock/laravel-ercaspay
 ```
+## Configuration
 
-You can publish and run the migrations with:
+1. Publish the config file:
 
-```bash
-php artisan vendor:publish --tag="laravel-ercaspay-migrations"
-php artisan migrate
-```
+    ```bash
+    php artisan vendor:publish --tag="laravel-ercaspay-config"
+    ```
 
-You can publish the config file with:
-
-```bash
-php artisan vendor:publish --tag="laravel-ercaspay-config"
-```
-
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
-
-```bash
-php artisan vendor:publish --tag="laravel-ercaspay-views"
-```
-
-## Usage
-
-```php
-$ercaspay = new Decodeblock\Ercaspay();
-echo $ercaspay->echoPhrase('Hello, Decodeblock!');
-```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
-
-- [Gabriel Ibenye](https://github.com/gabbyti)
-- [All Contributors](../../contributors)
-
-## License
-
-The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+2. Add your Ercaspay credentials to your .env file:
+   
+    ```
+    ERCASPAY_PUBLIC_KEY=your_public_key
+    ERCASPAY_SECRET_KEY=your_secret_key
+    ```

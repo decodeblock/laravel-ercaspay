@@ -30,3 +30,6 @@ phpstan.neon
 testbench.yaml
 /docs
 /coverage
+
+ThirdPartyAPICallTest.php
+.env.testing
