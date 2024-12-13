@@ -1,7 +1,6 @@
 <?php
 
 use Decodeblock\Ercaspay\Ercaspay;
-use Decodeblock\Ercaspay\Exceptions\IsNullException;
 
 beforeEach(function () {
     $this->ercaspay = new Ercaspay;
@@ -14,4 +13,3 @@ it('generates a payment reference in UUID format', function () {
         ->toBeString()
         ->toMatch('/[0-9a-fA-F\-]{36}/'); // Matches UUID format
 });
-
