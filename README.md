@@ -36,7 +36,7 @@ composer require decodeblock/laravel-ercaspay
 1. Publish the config file:
 
     ```bash
-    php artisan vendor:publish --tag="laravel-ercaspay-config"
+    php artisan vendor:publish --tag="ercaspay-config"
     ```
 
 2. Add your Ercaspay credentials to your .env file:
