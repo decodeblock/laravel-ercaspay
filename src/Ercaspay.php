@@ -54,7 +54,7 @@ class Ercaspay
      *
      * @param  bool  $verifySsl  Whether to verify SSL certificates
      */
-    private function initializeClient(bool $verifySsl = true): void
+    public function initializeClient(bool $verifySsl = true): void
     {
         Log::debug('Setting up HTTP client', ['verify_ssl' => $verifySsl]);
         $authBearer = 'Bearer '.$this->secretKey;
@@ -77,9 +77,8 @@ class Ercaspay
      * @param  string  $relativeUrl  The API endpoint URL
      * @param  string  $method  HTTP method (GET, POST etc)
      * @param  array  $body  Request body data
-     * @param  int  $statusCode  Response status code
      */
-    private function setResponse(string $relativeUrl, string $method, array $body = [], &$statusCode = 200): self
+    private function setResponse(string $relativeUrl, string $method, array $body = []): self
     {
         Log::info('Making API request', [
             'url' => $relativeUrl,
@@ -92,28 +91,22 @@ class Ercaspay
         try {
             $options = ! empty($body) ? ['json' => $body] : [];
             $this->response = $this->client->request(strtoupper($method), $relativeUrl, $options);
-            Log::info('API request successful', ['status_code' => $this->response->getStatusCode()]);
+            Log::info('API request successful');
         } catch (ClientException $e) {
-            $statusCode = $e->getResponse()->getStatusCode();
             $this->response = $e->getResponse();
 
             Log::error('Client error in API request', [
-                'status_code' => $statusCode,
                 'error' => $e->getMessage(),
             ]);
 
             return $this;
         } catch (ServerException $e) {
-            $statusCode = $e->getResponse()->getStatusCode();
             Log::error('Server error in API request', [
-                'status_code' => $statusCode,
                 'error' => $e->getMessage(),
             ]);
             throw new ErcaspayServerErrorException('Ercaspay Server error message: '.$e->getMessage());
         } catch (RequestException $e) {
-            $statusCode = $e->getResponse()->getStatusCode();
             Log::error('Request failed', [
-                'status_code' => $statusCode,
                 'error' => $e->getMessage(),
             ]);
             throw new Exception('Request failed: '.$e->getMessage());

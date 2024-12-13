@@ -32,4 +32,6 @@ testbench.yaml
 /coverage
 
 ThirdPartyAPICallTest.php
+.env
+/workbench
 .env.testing
