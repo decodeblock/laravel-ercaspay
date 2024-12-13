@@ -88,7 +88,9 @@ class Ercaspay
             'body' => $body,
         ]);
 
-        $this->validateThatParamsAreNotEmpty($method);
+        if (empty($method)) {
+            throw new IsNullException('Method cannot be empty');
+        }
 
         try {
             $options = ! empty($body) ? ['json' => $body] : [];
@@ -176,14 +178,6 @@ class Ercaspay
     public function initiateTransaction(array $data): array
     {
         Log::info('Initiating payment transaction', ['data' => $data]);
-        $this->validateRequestBodyRequiredFields($data, [
-            'amount',
-            'paymentReference',
-            'paymentMethods',
-            'customerName',
-            'customerEmail',
-            'currency',
-        ]);
 
         $response = $this->setResponse('/api/v1/payment/initiate', 'POST', $data)->getResponse();
         Log::info('Payment transaction initiated successfully', ['response' => $response]);
@@ -201,7 +195,7 @@ class Ercaspay
     {
 
         Log::info('Verifying transaction', ['transaction_ref' => $transactionRef]);
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         $response = $this->setResponse('/api/v1/payment/transaction/verify/'.$transactionRef, 'GET')->getResponse();
         Log::info('Transaction verification completed', ['response' => $response]);
@@ -218,7 +212,7 @@ class Ercaspay
     public function initiateBankTransfer(string $transactionRef): array
     {
         Log::info('Initiating bank transfer', ['transaction_ref' => $transactionRef]);
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         $response = $this->setResponse('/api/v1/payment/bank-transfer/request-bank-account/'.$transactionRef, 'GET')->getResponse();
         Log::info('Bank transfer initiated successfully', ['response' => $response]);
@@ -239,7 +233,7 @@ class Ercaspay
             'transaction_ref' => $transactionRef,
             'bank_name' => $bankName,
         ]);
-        $this->validateThatParamsAreNotEmpty($transactionRef, $bankName);
+
 
         $response = $this->setResponse('/api/v1/payment/ussd/request-ussd-code/'.$transactionRef, 'POST', ['bank_name' => $bankName])->getResponse();
         Log::info('USSD transaction initiated successfully', ['response' => $response]);
@@ -284,7 +278,7 @@ class Ercaspay
     public function fetchTransactionDetails(string $transactionRef): array
     {
         Log::info('Fetching transaction details', ['transaction_ref' => $transactionRef]);
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         $response = $this->setResponse('/api/v1/payment/details/'.$transactionRef, 'GET')->getResponse();
         Log::info('Transaction details retrieved', ['response' => $response]);
@@ -308,7 +302,7 @@ class Ercaspay
             'payment_method' => $paymentMethod,
         ]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef, $paymentReference, $paymentMethod);
+
 
         $response = $this->setResponse('/api/v1/payment/status/'.$transactionRef, 'POST', [
             'payment_method' => $paymentMethod,
@@ -328,7 +322,7 @@ class Ercaspay
     public function cancelTransaction(string $transactionRef): array
     {
         Log::info('Cancelling transaction', ['transaction_ref' => $transactionRef]);
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         $response = $this->setResponse('/api/v1/payment/cancel/'.$transactionRef, 'GET')->getResponse();
         Log::info('Transaction cancelled successfully', ['response' => $response]);
@@ -355,7 +349,7 @@ class Ercaspay
             'card_number' => substr($cardNumber, 0, 6).'******'.substr($cardNumber, -4),
         ]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef, $cardNumber, $cardExpiryMonth, $cardExpiryYear, $cardCvv, $pin);
+
 
         $cardDetails = [
             'cvv' => $cardCvv,
@@ -403,7 +397,7 @@ class Ercaspay
             'payment_ref' => $paymentReference,
         ]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef, $paymentReference, $otp);
+
 
         Log::debug('Making OTP submission request', [
             'endpoint' => '/api/v1/payment/cards/otp/submit/'.$transactionRef,
@@ -434,7 +428,7 @@ class Ercaspay
             'payment_ref' => $paymentReference,
         ]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef, $paymentReference);
+
 
         Log::debug('Making OTP resend request', [
             'endpoint' => '/api/v1/payment/cards/otp/resend/'.$transactionRef,
@@ -460,7 +454,7 @@ class Ercaspay
     {
         Log::info('Fetching saved card details', ['transaction_ref' => $transactionRef]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         Log::debug('Making card details request', [
             'endpoint' => '/api/v1/payment/cards/details/'.$transactionRef,
@@ -484,7 +478,7 @@ class Ercaspay
     {
         Log::info('Verifying card transaction', ['transaction_ref' => $transactionRef]);
 
-        $this->validateThatParamsAreNotEmpty($transactionRef);
+
 
         Log::debug('Making transaction verification request', [
             'endpoint' => '/api/v1/payment/cards/transaction/verify',
@@ -498,42 +492,5 @@ class Ercaspay
         Log::info('Transaction verification completed', ['response' => $response]);
 
         return $response;
-    }
-
-    /**
-     * Validates that required parameters are not empty
-     *
-     * @param  string  ...$data  Parameters to validate
-     */
-    private function validateThatParamsAreNotEmpty(string ...$data): void
-    {
-        foreach ($data as $field => $value) {
-            if (empty(trim($value))) {
-                $fieldName = array_keys(get_defined_vars()['data'])[$field];
-                Log::error('Empty parameter value detected', ['field' => $fieldName]);
-                throw new IsNullException('Empty string value provided.');
-            }
-        }
-
-        Log::debug('Parameter validation successful');
-    }
-
-    /**
-     * Validates that required fields are present in request data
-     *
-     * @param  array  $data  Request data to validate
-     * @param  array  $requiredFields  Required field names
-     */
-    private function validateRequestBodyRequiredFields(array $data, array $requiredFields = []): void
-    {
-
-        foreach ($requiredFields as $field) {
-            if (empty($data[$field])) {
-                Log::error('Missing required field', ['field' => $field]);
-                throw new \InvalidArgumentException("The field '{$field}' is required.");
-            }
-        }
-
-        Log::debug('Request body validation successful');
     }
 }
