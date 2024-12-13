@@ -2,6 +2,8 @@
 
 namespace Decodeblock\Ercaspay;
 
+use Decodeblock\Ercaspay\Exceptions\ErcaspayClientErrorException;
+use Decodeblock\Ercaspay\Exceptions\ErcaspayRequestException;
 use Decodeblock\Ercaspay\Exceptions\ErcaspayServerErrorException;
 use Decodeblock\Ercaspay\Exceptions\IsNullException;
 use Decodeblock\Ercaspay\Types\PayerDeviceDto;
@@ -93,23 +95,55 @@ class Ercaspay
             $this->response = $this->client->request(strtoupper($method), $relativeUrl, $options);
             Log::info('API request successful');
         } catch (ClientException $e) {
+            if (! $e->hasResponse()) {
+                Log::error('Client error in API request', [
+                    'response' => $e->getMessage(),
+                    'status_code' => $e->getCode(),
+                ]);
+                throw new ErcaspayClientErrorException($e->getMessage(), $e->getCode());
+            }
             $this->response = $e->getResponse();
+            $errorData = $this->getResponse();
 
-            Log::error('Client error in API request', [
-                'error' => $e->getMessage(),
+            Log::error('Ercaspay Client error in API request', [
+                'response' => $errorData,
+                'status_code' => $e->getCode(),
             ]);
-
-            return $this;
+            // Throw custom exception with readable message
+            throw new ErcaspayClientErrorException($errorData['errorMessage'] ?? "An error occurred while calling ercapay api path: $relativeUrl", $e->getCode(), $errorData);
         } catch (ServerException $e) {
+            if (! $e->hasResponse()) {
+                Log::error('Server error in API request', [
+                    'response' => $e->getMessage(),
+                    'status_code' => $e->getCode(),
+                ]);
+                throw new ErcaspayServerErrorException($e->getMessage(), $e->getCode());
+            }
+            $this->response = $e->getResponse();
+            $errorData = $this->getResponse();
+
             Log::error('Server error in API request', [
-                'error' => $e->getMessage(),
+                'response' => $errorData,
+                'status_code' => $e->getCode(),
             ]);
-            throw new ErcaspayServerErrorException('Ercaspay Server error message: '.$e->getMessage());
+            throw new ErcaspayServerErrorException($errorData['errorMessage'] ?? "Ercaspay server error occurred while calling ercapay api path: $relativeUrl", $e->getCode(), $errorData);
         } catch (RequestException $e) {
-            Log::error('Request failed', [
-                'error' => $e->getMessage(),
+            if (! $e->hasResponse()) {
+                Log::error('Request error in API request', [
+                    'response' => $e->getMessage(),
+                    'status_code' => $e->getCode(),
+                ]);
+                throw new ErcaspayRequestException($e->getMessage(), $e->getCode());
+            }
+
+            $this->response = $e->getResponse();
+            $errorData = $this->getResponse();
+
+            Log::error('Request error in API request', [
+                'response' => $errorData,
+                'status_code' => $e->getCode(),
             ]);
-            throw new Exception('Request failed: '.$e->getMessage());
+            throw new ErcaspayRequestException($errorData['errorMessage'] ?? "An Ercaspay request error occurred while calling ercapay api path: $relativeUrl", $e->getCode(), $errorData);
         }
 
         return $this;

@@ -4,7 +4,7 @@ namespace Decodeblock\Ercaspay\Exceptions;
 
 use Exception;
 
-class ErcaspayServerErrorException extends Exception
+class ErcaspayRequestException extends Exception
 {
     protected $response;
 
