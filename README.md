@@ -2,10 +2,16 @@
 
 A Laravel package for seamless integration with the Ercaspay payment gateway API.
 
+[![License](https://img.shields.io/github/license/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://packagist.org/packages/decodeblock/laravel-ercaspay)
-[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3Arun-tests+branch%3Amain)
-[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
+[![Tests Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3Arun-tests+branch%3Amain)
+[![Code Style Status](https://img.shields.io/github/actions/workflow/status/decodeblock/laravel-ercaspay/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://packagist.org/packages/decodeblock/laravel-ercaspay)
+[![Contributors](https://img.shields.io/github/contributors/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/graphs/contributors)
+[![PHP Version Support](https://img.shields.io/packagist/php-v/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://www.php.net/)
+
+
+
 
 ## Features
 
@@ -233,15 +239,124 @@ public function fetchTransactionStatus(string $transactionRef, string $paymentRe
 public function cancelTransaction(string $transactionRef): array
 ```
 
-## Testing
+To provide clear and helpful information about the exceptions in your README, you can include a dedicated section about error handling and exception types. This section should describe the different exceptions that developers may encounter while using your package, their causes, and how to handle them. 
 
-Run tests using:
-
-```bash
-composer test
-```
+Here's a sample section you can include in your `README.md`:
 
 ---
+
+## Error Handling and Exceptions
+
+Your package may throw different types of exceptions based on the outcomes of HTTP requests made to the Ercaspay API. Below is a list of the key exceptions you should be aware of when integrating and working with this package:
+
+### 1. `ErcaspayRequestException`
+
+**Thrown when:**
+- There is an issue with the request, such as a failure in communication or missing parameters.
+- The error message is user-defined and includes detailed context from the API.
+
+**Usage Example:**
+
+```php
+use YourPackage\Exceptions\ErcaspayRequestException;
+
+try {
+    // API call
+} catch (ErcaspayRequestException $e) {
+    // Access the error message
+    echo $e->getMessage();
+
+    // Access additional error data
+    print_r($e->getResponse());
+}
+```
+
+**What You Can Expect:**
+- `getMessage()` – Returns a description of the error (e.g., "Request failed").
+- `getCode()` – Provides the error code (could be an HTTP status code or `0` for network-related errors).
+- `getResponse()` – Returns additional data provided by the API or error context.
+
+---
+
+### 2. `ErcaspayClientErrorException`
+
+**Thrown when:**
+- The API responds with a client-side error (HTTP status code 4xx).
+- This exception is thrown when a request is malformed or contains invalid parameters.
+
+**Usage Example:**
+
+```php
+use YourPackage\Exceptions\ErcaspayClientErrorException;
+
+try {
+    // API call
+} catch (ErcaspayClientErrorException $e) {
+    // Log or handle the 4xx error appropriately
+    echo $e->getMessage();
+    
+    // Access additional error data
+    print_r($e->getResponse());
+}
+```
+
+**What You Can Expect:**
+- Contains the same methods as `ErcaspayRequestException`.
+- Additional information about client-side issues, such as invalid parameters or incorrect input.
+
+---
+
+### 3. `ErcaspayServerErrorException`
+
+**Thrown when:**
+- The API responds with a server-side error (HTTP status code 5xx).
+- This exception is used when something goes wrong on the server, such as a server crash or unavailable service.
+
+**Usage Example:**
+
+```php
+use YourPackage\Exceptions\ErcaspayServerErrorException;
+
+try {
+    // API call
+} catch (ErcaspayServerErrorException $e) {
+    // Handle server-side issues, possibly by retrying or reporting to the support team
+    echo $e->getMessage();
+    
+    // Access additional error data
+    print_r($e->getResponse());
+}
+```
+
+**What You Can Expect:**
+- Same structure as the other exceptions but specifically for server-related issues.
+- Contains error data related to server failures.
+
+## Logging
+
+This package provides logging capabilities to help you monitor and troubleshoot API interactions and errors. By default, important information about API requests, responses, and exceptions is logged, which can be useful for debugging and keeping track of system behavior.
+
+### What is Logged?
+
+The package logs the following information:
+
+#### 1. API Request Details:
+- URL of the API endpoint
+- HTTP method (GET, POST, etc.)
+- Request body (if applicable)
+
+#### 2. API Response Details:
+- HTTP status code of the response
+- Response body (if available)
+- Error messages (for failed requests)
+
+#### 3. Exceptions:
+- Details of exceptions, including client and server errors
+- Stack trace and error context for easier debugging
+
+--- 
+
+This will inform developers about the logging features in your package and what data is logged during the API interaction process.
 
 ## Changelog
 
@@ -258,6 +373,7 @@ We welcome contributions! Please see the [CONTRIBUTING](CONTRIBUTING.md) guide f
 ## Credits
 
 -   **[Gabriel Ibenye](https://github.com/gabbyti)**
+-   [All Contributors](../../contributors)
 
 ---
 
