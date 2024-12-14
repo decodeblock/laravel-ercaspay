@@ -33,5 +33,5 @@ testbench.yaml
 
 ThirdPartyAPICallTest.php
 .env
-/workbench
+
 .env.testing

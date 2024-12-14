@@ -19,6 +19,7 @@ use Illuminate\Support\Str;
 
 class Ercaspay
 {
+    //TODO: Remove the extra data sent for during logs for all function because setResponse() is already printing it
     /**
      * Secret key for authentication with Ercaspay API
      */
