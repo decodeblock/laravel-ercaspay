@@ -10,9 +10,6 @@ A Laravel package for seamless integration with the Ercaspay payment gateway API
 [![Contributors](https://img.shields.io/github/contributors/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://github.com/decodeblock/laravel-ercaspay/graphs/contributors)
 [![PHP Version Support](https://img.shields.io/packagist/php-v/decodeblock/laravel-ercaspay.svg?style=flat-square)](https://www.php.net/)
 
-
-
-
 ## Features
 
 -   Easy integration with Ercaspay payment gateway API
@@ -24,10 +21,7 @@ A Laravel package for seamless integration with the Ercaspay payment gateway API
 
 -   PHP 8.3 or higher
 -   Laravel 9.0 or higher
-
-## Ercaspay API Documentation
-
-- [Click here for the documentation](https://docs.ercaspay.com/#2f601f17-0bde-44ba-971a-f8458cadb213)
+-   You need to reference the Ercaspay API documentation. [Click here for the documentation](https://docs.ercaspay.com/#2f601f17-0bde-44ba-971a-f8458cadb213)
 
 ## Installation
 
@@ -239,7 +233,7 @@ public function fetchTransactionStatus(string $transactionRef, string $paymentRe
 public function cancelTransaction(string $transactionRef): array
 ```
 
-To provide clear and helpful information about the exceptions in your README, you can include a dedicated section about error handling and exception types. This section should describe the different exceptions that developers may encounter while using your package, their causes, and how to handle them. 
+To provide clear and helpful information about the exceptions in your README, you can include a dedicated section about error handling and exception types. This section should describe the different exceptions that developers may encounter while using your package, their causes, and how to handle them.
 
 Here's a sample section you can include in your `README.md`:
 
@@ -252,8 +246,9 @@ Your package may throw different types of exceptions based on the outcomes of HT
 ### 1. `ErcaspayRequestException`
 
 **Thrown when:**
-- There is an issue with the request, such as a failure in communication or missing parameters.
-- The error message is user-defined and includes detailed context from the API.
+
+-   There is an issue with the request, such as a failure in communication or missing parameters.
+-   The error message is user-defined and includes detailed context from the API.
 
 **Usage Example:**
 
@@ -272,17 +267,19 @@ try {
 ```
 
 **What You Can Expect:**
-- `getMessage()` – Returns a description of the error (e.g., "Request failed").
-- `getCode()` – Provides the error code (could be an HTTP status code or `0` for network-related errors).
-- `getResponse()` – Returns additional data provided by the API or error context.
+
+-   `getMessage()` – Returns a description of the error (e.g., "Request failed").
+-   `getCode()` – Provides the error code (could be an HTTP status code or `0` for network-related errors).
+-   `getResponse()` – Returns additional data provided by the API or error context.
 
 ---
 
 ### 2. `ErcaspayClientErrorException`
 
 **Thrown when:**
-- The API responds with a client-side error (HTTP status code 4xx).
-- This exception is thrown when a request is malformed or contains invalid parameters.
+
+-   The API responds with a client-side error (HTTP status code 4xx).
+-   This exception is thrown when a request is malformed or contains invalid parameters.
 
 **Usage Example:**
 
@@ -294,23 +291,25 @@ try {
 } catch (ErcaspayClientErrorException $e) {
     // Log or handle the 4xx error appropriately
     echo $e->getMessage();
-    
+
     // Access additional error data
     print_r($e->getResponse());
 }
 ```
 
 **What You Can Expect:**
-- Contains the same methods as `ErcaspayRequestException`.
-- Additional information about client-side issues, such as invalid parameters or incorrect input.
+
+-   Contains the same methods as `ErcaspayRequestException`.
+-   Additional information about client-side issues, such as invalid parameters or incorrect input.
 
 ---
 
 ### 3. `ErcaspayServerErrorException`
 
 **Thrown when:**
-- The API responds with a server-side error (HTTP status code 5xx).
-- This exception is used when something goes wrong on the server, such as a server crash or unavailable service.
+
+-   The API responds with a server-side error (HTTP status code 5xx).
+-   This exception is used when something goes wrong on the server, such as a server crash or unavailable service.
 
 **Usage Example:**
 
@@ -322,15 +321,16 @@ try {
 } catch (ErcaspayServerErrorException $e) {
     // Handle server-side issues, possibly by retrying or reporting to the support team
     echo $e->getMessage();
-    
+
     // Access additional error data
     print_r($e->getResponse());
 }
 ```
 
 **What You Can Expect:**
-- Same structure as the other exceptions but specifically for server-related issues.
-- Contains error data related to server failures.
+
+-   Same structure as the other exceptions but specifically for server-related issues.
+-   Contains error data related to server failures.
 
 ## Logging
 
@@ -341,41 +341,33 @@ This package provides logging capabilities to help you monitor and troubleshoot 
 The package logs the following information:
 
 #### 1. API Request Details:
-- URL of the API endpoint
-- HTTP method (GET, POST, etc.)
-- Request body (if applicable)
+
+-   URL of the API endpoint
+-   HTTP method (GET, POST, etc.)
 
 #### 2. API Response Details:
-- HTTP status code of the response
-- Response body (if available)
-- Error messages (for failed requests)
+
+-   HTTP status code of the response
+-   Response body (if available)
+-   Error messages (for failed requests)
 
 #### 3. Exceptions:
-- Details of exceptions, including client and server errors
-- Stack trace and error context for easier debugging
 
---- 
-
-This will inform developers about the logging features in your package and what data is logged during the API interaction process.
+-   Details of exceptions, including client and server errors
+-   Stack trace and error context for easier debugging
 
 ## Changelog
 
 Detailed changes for each release are documented in the [CHANGELOG](CHANGELOG.md).
 
----
-
 ## Contributing
 
 We welcome contributions! Please see the [CONTRIBUTING](CONTRIBUTING.md) guide for details.
-
----
 
 ## Credits
 
 -   **[Gabriel Ibenye](https://github.com/gabbyti)**
 -   [All Contributors](../../contributors)
-
----
 
 ## License
 
