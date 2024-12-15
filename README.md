@@ -27,7 +27,7 @@ A Laravel package for seamless integration with the Ercaspay payment gateway API
 
 ## Ercaspay API Documentation
 
-- [Click here for the documentation](https://docs.ercaspay.com/#2f601f17-0bde-44ba-971a-f8458cadb213)
+- [Click here for the documentation](https://docs.ercaspay.com/#2f601f17-0bde-44ba-971a-f8458cadb213){:target="_blank"}
 
 ## Installation
 
