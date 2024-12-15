@@ -59,11 +59,13 @@ class PaymentController
 
                 break;
             case 'ussd':
-                dd($request->all());
+                $this->ercaspay->initializeClient(false);
+                $response = $this->ercaspay->getBankListForUssd($request->transactionRef);
+                // dd($response);
+                return view('ussd-checkout', ['transactionRef' => $request->transactionRef, 'banks' => $response['responseBody']]);
                 break;
             case 'card':
                 return view('card-checkout', ['transactionRef' => $request->transactionRef]);
-                dd($request->all());
                 break;
 
             default:
@@ -90,5 +92,61 @@ class PaymentController
         dd($response);
 
         // Process the payment...
+    }
+
+    public function processUssdPayment(Request $request)
+    {
+
+        // dd($request->all());
+
+        $this->ercaspay->initializeClient(false);
+        $response = $this->ercaspay->initiateUssdTransaction($request->transactionRef, $request->bankName);
+
+        return view('ussd-details', ['responseBody' => $response['responseBody']]);
+
+        // Process the payment...
+    }
+
+    // callExtraEndpoint
+    public function callExtraEndpoint(Request $request)
+    {
+        $this->ercaspay->initializeClient(false);
+        switch ($request->endpoint) {
+            case 'verifyTransaction':
+                $response = $this->ercaspay->verifyTransaction($request->transactionRef);
+                break;
+
+            case 'fetchTransactionDetails':
+                $response = $this->ercaspay->fetchTransactionDetails($request->transactionRef);
+                break;
+
+            case 'fetchTransactionStatus':
+                $response = $this->ercaspay->fetchTransactionStatus(
+                    $request->transactionRef,
+                    $request->paymentRef,
+                    $request->paymentMethod
+                );
+                break;
+
+            case 'cancelTransaction':
+                $response = $this->ercaspay->cancelTransaction($request->transactionRef);
+                break;
+
+            case 'getCardDetails':
+                $response = $this->ercaspay->getCardDetails($request->transactionRef);
+                break;
+
+            case 'verifyCardTransaction':
+                $response = $this->ercaspay->verifyCardTransaction($request->transactionRef);
+                break;
+
+            default:
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Invalid endpoint selected'
+                ], 400);
+        }
+
+        dd($response);
     }
 }
