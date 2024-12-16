@@ -353,7 +353,7 @@ class Ercaspay
         $deviceDetails = PayerDeviceDto::fromRequest($request)->toArray();
         Log::debug('Device details captured', ['device_details' => $deviceDetails]);
 
-        $publicKeyPath = __DIR__.'/key/public_key.pem';
+        $publicKeyPath = __DIR__.'/key/rsa_public_key.pub';
         Log::debug('Using public key for encryption', ['key_path' => $publicKeyPath]);
 
         $encryptor = new CardEncryptor($publicKeyPath);
