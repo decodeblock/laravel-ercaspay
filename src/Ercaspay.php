@@ -24,6 +24,18 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+/**
+ * ErcasPay payment gateway client class
+ *
+ * A client implementation for interacting with the ErcasPay payment gateway API.
+ * Provides methods for initiating and managing payment transactions including:
+ * - Card payments
+ * - Bank transfers
+ * - USSD transactions
+ * - Transaction verification
+ * - Transaction status checks
+ * - Transaction cancellation
+ */
 class Ercaspay
 {
     //TODO: Remove the extra data sent for during logs for all function because setResponse() is already printing it
@@ -52,11 +64,11 @@ class Ercaspay
      */
     public function __construct()
     {
-        Log::info('Initializing Ercaspay client');
+        Log::debug('Initializing Ercaspay client');
         $this->secretKey = Config::get('ercaspay.secretKey');
         $this->baseUrl = Config::get('ercaspay.baseUrl');
         $this->initializeClient();
-        Log::info('Ercaspay client initialized successfully');
+        Log::debug('Ercaspay client initialized successfully');
     }
 
     /**
@@ -90,7 +102,7 @@ class Ercaspay
      */
     private function setResponse(string $relativeUrl, string $method, array $body = []): self
     {
-        Log::info('Making API request', [
+        Log::debug('Making API request', [
             'url' => $relativeUrl,
             'method' => $method,
             'body' => $body,
@@ -103,7 +115,7 @@ class Ercaspay
         try {
             $options = ! empty($body) ? ['json' => $body] : [];
             $this->response = $this->client->request(strtoupper($method), $relativeUrl, $options);
-            Log::info('API request successful');
+            Log::debug('API request successful');
         } catch (ClientException $e) {
             if (! $e->hasResponse()) {
                 Log::error('Client error in API request', [
@@ -185,10 +197,10 @@ class Ercaspay
      */
     public function initiateTransaction(array $data): array
     {
-        Log::info('Initiating payment transaction', ['data' => $data]);
+        Log::debug('Initiating payment transaction', ['data' => $data]);
 
         $response = $this->setResponse('/api/v1/payment/initiate', 'POST', $data)->getResponse();
-        Log::info('Payment transaction initiated successfully', ['response' => $response]);
+        Log::debug('Payment transaction initiated successfully', ['response' => $response]);
 
         return $response;
     }
@@ -202,10 +214,10 @@ class Ercaspay
     public function verifyTransaction(string $transactionRef): array
     {
 
-        Log::info('Verifying transaction', ['transaction_ref' => $transactionRef]);
+        Log::debug('Verifying transaction', ['transaction_ref' => $transactionRef]);
 
         $response = $this->setResponse('/api/v1/payment/transaction/verify/'.$transactionRef, 'GET')->getResponse();
-        Log::info('Transaction verification completed', ['response' => $response]);
+        Log::debug('Transaction verification completed', ['response' => $response]);
 
         return $response;
     }
@@ -218,10 +230,10 @@ class Ercaspay
      */
     public function initiateBankTransfer(string $transactionRef): array
     {
-        Log::info('Initiating bank transfer', ['transaction_ref' => $transactionRef]);
+        Log::debug('Initiating bank transfer', ['transaction_ref' => $transactionRef]);
 
         $response = $this->setResponse('/api/v1/payment/bank-transfer/request-bank-account/'.$transactionRef, 'GET')->getResponse();
-        Log::info('Bank transfer initiated successfully', ['response' => $response]);
+        Log::debug('Bank transfer initiated successfully', ['response' => $response]);
 
         return $response;
     }
@@ -235,13 +247,13 @@ class Ercaspay
      */
     public function initiateUssdTransaction(string $transactionRef, string $bankName): array
     {
-        Log::info('Initiating USSD transaction', [
+        Log::debug('Initiating USSD transaction', [
             'transaction_ref' => $transactionRef,
             'bank_name' => $bankName,
         ]);
 
         $response = $this->setResponse('/api/v1/payment/ussd/request-ussd-code/'.$transactionRef, 'POST', ['bank_name' => $bankName])->getResponse();
-        Log::info('USSD transaction initiated successfully', ['response' => $response]);
+        Log::debug('USSD transaction initiated successfully', ['response' => $response]);
 
         return $response;
     }
@@ -254,7 +266,7 @@ class Ercaspay
     public function getBankListForUssd(): array
     {
 
-        Log::info('Fetching USSD supported banks list');
+        Log::debug('Fetching USSD supported banks list');
         $response = $this->setResponse('/api/v1/payment/ussd/supported-banks', 'GET')->getResponse();
         Log::debug('Retrieved USSD supported banks', ['banks' => $response]);
 
@@ -282,10 +294,10 @@ class Ercaspay
      */
     public function fetchTransactionDetails(string $transactionRef): array
     {
-        Log::info('Fetching transaction details', ['transaction_ref' => $transactionRef]);
+        Log::debug('Fetching transaction details', ['transaction_ref' => $transactionRef]);
 
         $response = $this->setResponse('/api/v1/payment/details/'.$transactionRef, 'GET')->getResponse();
-        Log::info('Transaction details retrieved', ['response' => $response]);
+        Log::debug('Transaction details retrieved', ['response' => $response]);
 
         return $response;
     }
@@ -300,7 +312,7 @@ class Ercaspay
      */
     public function fetchTransactionStatus(string $transactionRef, string $paymentReference, string $paymentMethod): array
     {
-        Log::info('Fetching transaction status', [
+        Log::debug('Fetching transaction status', [
             'transaction_ref' => $transactionRef,
             'payment_ref' => $paymentReference,
             'payment_method' => $paymentMethod,
@@ -310,7 +322,7 @@ class Ercaspay
             'payment_method' => $paymentMethod,
             'reference' => $paymentReference,
         ])->getResponse();
-        Log::info('Transaction status retrieved', ['response' => $response]);
+        Log::debug('Transaction status retrieved', ['response' => $response]);
 
         return $response;
     }
@@ -323,10 +335,10 @@ class Ercaspay
      */
     public function cancelTransaction(string $transactionRef): array
     {
-        Log::info('Cancelling transaction', ['transaction_ref' => $transactionRef]);
+        Log::debug('Cancelling transaction', ['transaction_ref' => $transactionRef]);
 
         $response = $this->setResponse('/api/v1/payment/cancel/'.$transactionRef, 'GET')->getResponse();
-        Log::info('Transaction cancelled successfully', ['response' => $response]);
+        Log::debug('Transaction cancelled successfully', ['response' => $response]);
 
         return $response;
     }
@@ -345,7 +357,7 @@ class Ercaspay
      */
     public function initiateCardTransaction(Request $request, string $transactionRef, string $cardNumber, string $cardExpiryMonth, string $cardExpiryYear, string $cardCvv, string $pin): array
     {
-        Log::info('Initiating card transaction', [
+        Log::debug('Initiating card transaction', [
             'transaction_ref' => $transactionRef,
             'card_number' => substr($cardNumber, 0, 6).'******'.substr($cardNumber, -4),
         ]);
@@ -376,7 +388,7 @@ class Ercaspay
         $this->setResponse('/api/v1/payment/cards/initialize', 'POST', $data);
 
         $response = $this->getResponse();
-        Log::info('Card transaction initiated successfully', ['response' => $response]);
+        Log::debug('Card transaction initiated successfully', ['response' => $response]);
 
         return $response;
     }
@@ -391,7 +403,7 @@ class Ercaspay
      */
     public function submitCardOTP(string $transactionRef, string $paymentReference, string $otp): array
     {
-        Log::info('Submitting card OTP', [
+        Log::debug('Submitting card OTP', [
             'transaction_ref' => $transactionRef,
             'payment_ref' => $paymentReference,
         ]);
@@ -406,7 +418,7 @@ class Ercaspay
             'gatewayReference' => $paymentReference,
         ])->getResponse();
 
-        Log::info('OTP submission completed', ['response' => $response]);
+        Log::debug('OTP submission completed', ['response' => $response]);
 
         return $response;
     }
@@ -420,7 +432,7 @@ class Ercaspay
      */
     public function resendCardOTP(string $transactionRef, string $paymentReference): array
     {
-        Log::info('Requesting OTP resend', [
+        Log::debug('Requesting OTP resend', [
             'transaction_ref' => $transactionRef,
             'payment_ref' => $paymentReference,
         ]);
@@ -434,7 +446,7 @@ class Ercaspay
             'gatewayReference' => $paymentReference,
         ])->getResponse();
 
-        Log::info('OTP resend completed', ['response' => $response]);
+        Log::debug('OTP resend completed', ['response' => $response]);
 
         return $response;
     }
@@ -447,7 +459,7 @@ class Ercaspay
      */
     public function getCardDetails(string $transactionRef): array
     {
-        Log::info('Fetching saved card details', ['transaction_ref' => $transactionRef]);
+        Log::debug('Fetching saved card details', ['transaction_ref' => $transactionRef]);
 
         Log::debug('Making card details request', [
             'endpoint' => '/api/v1/payment/cards/details/'.$transactionRef,
@@ -456,7 +468,7 @@ class Ercaspay
 
         $response = $this->setResponse('/api/v1/payment/cards/details/'.$transactionRef, 'GET')->getResponse();
 
-        Log::info('Card details retrieved successfully', ['response' => $response]);
+        Log::debug('Card details retrieved successfully', ['response' => $response]);
 
         return $response;
     }
@@ -469,7 +481,7 @@ class Ercaspay
      */
     public function verifyCardTransaction(string $transactionRef): array
     {
-        Log::info('Verifying card transaction', ['transaction_ref' => $transactionRef]);
+        Log::debug('Verifying card transaction', ['transaction_ref' => $transactionRef]);
 
         Log::debug('Making transaction verification request', [
             'endpoint' => '/api/v1/payment/cards/transaction/verify',
@@ -480,7 +492,7 @@ class Ercaspay
             'reference' => $transactionRef,
         ])->getResponse();
 
-        Log::info('Transaction verification completed', ['response' => $response]);
+        Log::debug('Transaction verification completed', ['response' => $response]);
 
         return $response;
     }
