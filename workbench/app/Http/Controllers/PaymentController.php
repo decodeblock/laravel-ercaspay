@@ -61,6 +61,7 @@ class PaymentController
             case 'ussd':
                 $this->ercaspay->initializeClient(false);
                 $response = $this->ercaspay->getBankListForUssd($request->transactionRef);
+
                 // dd($response);
                 return view('ussd-checkout', ['transactionRef' => $request->transactionRef, 'banks' => $response['responseBody']]);
                 break;
@@ -143,7 +144,7 @@ class PaymentController
             default:
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Invalid endpoint selected'
+                    'message' => 'Invalid endpoint selected',
                 ], 400);
         }
 
